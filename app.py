@@ -1,5 +1,11 @@
 from flask import Flask, render_template, request, make_response, url_for, session 
 import json
+import jsonrpc
+import jsonrpclib
+import random
+import urllib.request
+import getpass
+import http
 import requests
 from pprint import pprint
 import logging
@@ -11,13 +17,19 @@ logging.basicConfig(format='%(asctime)s|%(name)s|%(levelname)s|%(message)s', dat
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-server_url  ='https://somosreyes.odoo.com'
-db_name = 'xmarts-somosreyes-somosreyes-250093'
-#server_url = 'https://somosreyes-test-862115.dev.odoo.com'
-#db_name = 'somosreyes-test-862115'
-username = 'moises.santiago@somos-reyes.com'
-password = 'ttgo702'
+server_url  ='http://localhost:8090'
+db_name = 'yuju'
+username = 'admin'
+password = 'odoo'
 json_endpoint = "%s/jsonrpc" % server_url
+
+#server_url  ='https://somosreyes.odoo.com'
+#db_name = 'xmarts-somosreyes-somosreyes-250093'
+##server_url = 'https://somosreyes-test-862115.dev.odoo.com'
+##db_name = 'somosreyes-test-862115'
+#username = 'moises.santiago@somos-reyes.com'
+#password = 'ttgo702'
+#json_endpoint = "%s/jsonrpc" % server_url
 
 headers = {"Content-Type": "application/json"}
 
@@ -33,7 +45,6 @@ def get_json_payload(service, method, *args):
 	},
 	"id": 6,
 	})
-
 
 def get_user_id():
 	try:
@@ -52,7 +63,7 @@ def get_user_id():
 		return False
 
 
-user_id = 6
+user_id = 2
 def get_order_id(name):
 	try:
 		payload = get_json_payload("common", "version")
@@ -60,8 +71,19 @@ def get_order_id(name):
 
 		if user_id:
 			search_domain = [['name', '=', name]]
-			payload = get_json_payload("object", "execute_kw",db_name, user_id, password,'sale.order', 'search_read', [search_domain, ['marketplace_order_id', 'name', 'seller_marketplace']],
-			{'limit': 1})
+			#payload = get_json_payload("object", "execute",db_name, user_id, password,'sale.order', 'search_read', [search_domain, ['marketplace_order_id', 'name', 'seller_marketplace']],{'limit': 1})
+			payload = json.dumps({
+						"jsonrpc": "2.0",
+						"method": "call",
+						"params": {
+							"service": "object",
+							"method": "execute",
+							"args": [db_name, user_id, password, "sale.order", "search_read",
+									search_domain,
+									['marketplace_order_id', 'name', 'seller_marketplace']]
+						}
+					})
+			print(payload)
 			res = requests.post(json_endpoint, data=payload, headers=headers).json()
 			#logging.info(default_code+str(res))
 			#print (res)
@@ -72,7 +94,7 @@ def get_order_id(name):
 
 			return dict(marketplace_order_id = marketplace_order_id, seller_marketplace =seller_marketplace, order_odoo_id = order_odoo_id )
 		else:
-			logging.error("Failed: wrong credentials")	
+			logging.error("Failed: wrong credentials")
 			return False
 	except Exception as e:
 		logging.error ('Error:'+str(e))
@@ -199,9 +221,9 @@ def recupera_meli_token(user_id):
 		#print 'USER ID:', user_id
 		token_dir=''
 		if user_id == 25523702:# Usuario de SOMOS REYES VENTAS
-			token_dir='/home/serverubuntu/meli/tokens_meli.txt' 
+			token_dir= r'C:\Dev\tokens\tokens_meli.txt'
 		elif user_id == 160190870:# Usuario de SOMOS REYES OFICIALES
-			token_dir='/home/serverubuntu/meli/tokens_meli_oficiales.txt'
+			token_dir= r'C:\Dev\tokens\tokens_meli_oficiales.txt'
 		#print token_dir
 
 		archivo_tokens=open(token_dir, 'r')
