@@ -63,7 +63,7 @@ def get_user_id():
 		return False
 
 
-user_id = 2
+user_id = 6
 def get_order_id(name):
 	try:
 		payload = get_json_payload("common", "version")
@@ -72,17 +72,8 @@ def get_order_id(name):
 		if user_id:
 			search_domain = [['name', '=', name]]
 			#payload = get_json_payload("object", "execute",db_name, user_id, password,'sale.order', 'search_read', [search_domain, ['marketplace_order_id', 'name', 'seller_marketplace']],{'limit': 1})
-			payload = json.dumps({
-						"jsonrpc": "2.0",
-						"method": "call",
-						"params": {
-							"service": "object",
-							"method": "execute",
-							"args": [db_name, user_id, password, "sale.order", "search_read",
-									search_domain,
-									['marketplace_order_id', 'name', 'seller_marketplace']]
-						}
-					})
+			payload = json.dumps({"jsonrpc": "2.0", "method": "call", "params": {"service": "object", "method": "execute", "args": [db_name, user_id, password, "sale.order", "search_read",
+									search_domain, ['marketplace_order_id', 'name', 'seller_marketplace']]}})
 			print(payload)
 			res = requests.post(json_endpoint, data=payload, headers=headers).json()
 			#logging.info(default_code+str(res))
