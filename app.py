@@ -63,7 +63,7 @@ def get_user_id():
 		return False
 
 
-user_id = 6
+user_id = 2
 def get_order_id(name):
 	try:
 		payload = get_json_payload("common", "version")
@@ -73,14 +73,14 @@ def get_order_id(name):
 			search_domain = [['name', '=', name]]
 			#payload = get_json_payload("object", "execute",db_name, user_id, password,'sale.order', 'search_read', [search_domain, ['marketplace_order_id', 'name', 'seller_marketplace']],{'limit': 1})
 			payload = json.dumps({"jsonrpc": "2.0", "method": "call", "params": {"service": "object", "method": "execute", "args": [db_name, user_id, password, "sale.order", "search_read",
-									search_domain, ['marketplace_order_id', 'name', 'seller_marketplace']]}})
+									search_domain, ['channel_order_reference', 'name', 'yuju_seller_id']]}})
 			print(payload)
 			res = requests.post(json_endpoint, data=payload, headers=headers).json()
 			#logging.info(default_code+str(res))
 			#print (res)
-			marketplace_order_id = res['result'][0]['marketplace_order_id']
-			print('marketplace_order_id', marketplace_order_id)
-			seller_marketplace = res['result'][0]['seller_marketplace']
+			marketplace_order_id = res['result'][0]['channel_order_reference']
+			print('channel_order_reference', marketplace_order_id)
+			seller_marketplace = res['result'][0]['yuju_seller_id']
 			order_odoo_id = res['result'][0]['id']
 
 			return dict(marketplace_order_id = marketplace_order_id, seller_marketplace =seller_marketplace, order_odoo_id = order_odoo_id )
@@ -266,7 +266,7 @@ def get_order_meli(order_id, access_token):
 		print (url)
 		r=requests.get(url)
 		shipping_id = r.json()['shipping']['id']
-		seller_id =  r.json()['seller']['id'] 
+		seller_id =  r.json()['seller']['id']
 		status =  r.json()['status']
 		#print (json.dumps(r.json(), indent=4, sort_keys=True))
 		#----RECUPERA TAMBIEN EL ID DEL SELLER
