@@ -17,10 +17,10 @@ logging.basicConfig(format='%(asctime)s|%(name)s|%(levelname)s|%(message)s', dat
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-server_url  ='http://localhost:8090'
-db_name = 'yuju'
-username = 'admin'
-password = 'odoo'
+server_url  ='https://wonderbrands.odoo.com'
+db_name = 'wonderbrands-main-4539884'
+username = 'will@wonderbrands.co'
+password = 'admin123'
 json_endpoint = "%s/jsonrpc" % server_url
 
 #server_url  ='https://somosreyes.odoo.com'
@@ -43,7 +43,7 @@ def get_json_payload(service, method, *args):
 	"method": method,
 	"args": args
 	},
-	"id": 6,
+	"id": 162,
 	})
 
 def get_user_id():
@@ -63,7 +63,7 @@ def get_user_id():
 		return False
 
 
-user_id = 2
+user_id = 162
 def get_order_id(name):
 	try:
 		payload = get_json_payload("common", "version")
@@ -171,7 +171,8 @@ def imprime_zpl(so_name, ubicacion, order_odoo_id):
 	host = ubicaciones.get(ubicacion)
 
 	print ('IP de la Impresora:', host)
-	port = 9100   
+	port = 9100
+	#port = 5432
 	respuesta_imprime_zpl = ''
 
 	try:
@@ -211,10 +212,11 @@ def recupera_meli_token(user_id):
 	try:
 		#print 'USER ID:', user_id
 		token_dir=''
+  
 		if user_id == 25523702:# Usuario de SOMOS REYES VENTAS
-			token_dir= r'C:\Dev\tokens\tokens_meli.txt'
+			token_dir='/home/serverubuntu/meli/tokens_meli.txt' 
 		elif user_id == 160190870:# Usuario de SOMOS REYES OFICIALES
-			token_dir= r'C:\Dev\tokens\tokens_meli_oficiales.txt'
+			token_dir='/home/serverubuntu/meli/tokens_meli_oficiales.txt'
 		#print token_dir
 
 		archivo_tokens=open(token_dir, 'r')
